@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cloud Task Manager</title>
+  <style>
+    :root { font-family: Inter, Arial, sans-serif; color: #172033; background: #f3f6fb; }
+    body { margin: 0; }
+    main { max-width: 760px; margin: 48px auto; padding: 0 18px; }
+    .card { background: white; padding: 28px; border-radius: 18px; box-shadow: 0 8px 30px #17203312; }
+    h1 { margin: 0 0 8px; }
+    .sub { color: #65718a; margin-bottom: 24px; }
+    form.add { display: flex; gap: 10px; margin-bottom: 20px; }
+    input { flex: 1; min-width: 0; padding: 12px; border: 1px solid #ccd4e1; border-radius: 9px; font-size: 1rem; }
+    button { border: 0; border-radius: 9px; padding: 10px 14px; background: #2457d6; color: white; cursor: pointer; }
+    button.delete { background: #b42318; }
+    ul { list-style: none; padding: 0; margin: 0; }
+    li { display: flex; align-items: center; gap: 10px; padding: 13px 0; border-top: 1px solid #edf0f5; }
+    li span { flex: 1; overflow-wrap: anywhere; }
+    .done { text-decoration: line-through; color: #7b8497; }
+    .meta { margin-top: 22px; color: #65718a; font-size: .86rem; border-top: 1px solid #edf0f5; padding-top: 14px; }
+    .pill { display: inline-block; background: #e9f1ff; color: #2457d6; padding: 5px 9px; border-radius: 99px; font-size: .8rem; }
+  </style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <span class="pill">Docker + Kubernetes</span>
+    <h1>Cloud Task Manager</h1>
+    <p class="sub">A small Flask application packaged in a Docker image and deployed on Kubernetes.</p>
+    <form class="add" method="post" action="/api/tasks">
+      <input name="title" placeholder="Enter a task..." aria-label="Task title" required>
+      <button type="submit">Add task</button>
+    </form>
+    <ul>
+      {% for task in tasks %}
+      <li>
+        <form method="post" action="/tasks/{{ task.id }}/toggle">
+          <button type="submit" aria-label="Toggle task">{{ "Undo" if task.done else "Done" }}</button>
+        </form>
+        <span class="{{ 'done' if task.done else '' }}">{{ task.title }}</span>
+        <form method="post" action="/tasks/{{ task.id }}/delete">
+          <button class="delete" type="submit">Delete</button>
+        </form>
+      </li>
+      {% else %}
+      <li>No tasks yet. Add one above.</li>
+      {% endfor %}
+    </ul>
+    <div class="meta">
+      <div>Container hostname: <strong>{{ hostname }}</strong></div>
+      <div>Health check: <a href="/health">/health</a> · API: <a href="/api/tasks">/api/tasks</a></div>
+    </div>
+  </section>
+</main>
+</body>
+</html>
